@@ -6,7 +6,7 @@ import time
 #hyperparameters:
 batchSize=64 # the batch sizs, let us denote it by B
 blockSize=256 # number of consecutive characters we are taking, let us denot it by T 
-maxIterations=5000 
+maxIterations=2500 
 evalInterval=500
 lr=3e-4
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -195,9 +195,22 @@ def train(model):
         loss.backward()
         optimizer.step()
 
-#testing the model
-train(model=model)
-text=decoder(model.generateText(encodings=torch.zeros((1,1),dtype=torch.long),maxTokensToGenerate=1000)[0].tolist())
-for char in text:
-    print(char,end="",flush=True)
-    time.sleep(0.03)
+
+if __name__ == "__main__":
+    #testing the model
+    modelPath="model.pth"
+    case="load"
+    TextLength=1000
+
+
+    if case=="load":
+        model=torch.load(modelPath)
+    else:
+        train(model=model)
+        torch.save(model, 'model.pth')
+
+
+    text=decoder(model.generateText(encodings=torch.zeros((1,1),dtype=torch.long),maxTokensToGenerate=TextLength)[0].tolist())
+    for char in text:
+        print(char,end="",flush=True)
+        time.sleep(0.03)
